@@ -1,33 +1,58 @@
 pipeline {
     agent any
 
+    environment {
+        NODE_ENV = 'production'
+        PORT = '3002'
+        // Load your paths from .env if you want, or Jenkins workspace default
+        FILE_DESTINATION = "${WORKSPACE}/Govtproject/fileupload"
+        NOTARY_LOG_FILE_PATH = "${WORKSPACE}/Generatedlicenses"
+    }
+
     stages {
-        stage('Checkout') {
+
+        stage('Checkout Code') {
             steps {
-                // Clone your GitHub repo automatically (Jenkins handles this)
-                checkout scm
+                echo 'Checking out source code...'
+                git url: 'https://github.com/SantoshKumar9290/notaryBackend.git', branch: 'main'
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                echo 'Running npm install...'
+                echo 'Installing npm dependencies...'
                 sh 'npm install'
             }
         }
-        stage('Start Application') {
+
+        stage('Prepare Directories') {
             steps {
-                echo 'Starting application with npm start...'
-                sh 'npm start'
+                echo 'Creating required directories for logs and file uploads...'
+                sh '''
+                    mkdir -p $FILE_DESTINATION
+                    mkdir -p $NOTARY_LOG_FILE_PATH
+                    echo "Directories created:"
+                    echo "Logs: $NOTARY_LOG_FILE_PATH"
+                    echo "File uploads: $FILE_DESTINATION"
+                '''
             }
         }
+
+        stage('Start Application') {
+            steps {
+                echo 'Starting Node.js backend...'
+                sh 'nohup npm start &'
+            }
+        }
+
     }
 
     post {
-        failure {
-            echo 'Build failed!'
-        }
         success {
-            echo 'Build succeeded!'
+            echo 'Backend started successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
