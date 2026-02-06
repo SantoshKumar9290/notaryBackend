@@ -21,9 +21,20 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Dependencies (if needed)') {
             steps {
-                sh "cd ${APP_DIR} && npm install"
+                script {
+                    // Check if node_modules exists
+                    if (!fileExists("${APP_DIR}/node_modules")) {
+                        echo "📦 node_modules not found. Installing dependencies..."
+                        sh """
+                            cd ${APP_DIR}
+                            npm install
+                        """
+                    } else {
+                        echo "✅ node_modules already exists. Skipping npm install."
+                    }
+                }
             }
         }
 
