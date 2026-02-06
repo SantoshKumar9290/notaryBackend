@@ -14,12 +14,12 @@ const {errorHandler} = require('./middleware/errorMiddleware');
 const app = express();
 
 const ContentSecurityPolicy = `
- default-src 'self' 'unsafe-inline' http://103.174.56.114:3001 http://103.174.56.114:4000 http://117.254.87.83:8091;
+ default-src 'self' 'unsafe-inline' http://10.10.120.190:300 http://117.250.201.43:3000 http://103.174.56.114:4000 http://117.254.87.83:8091;
  script-src 'self' 'unsafe-inline';
- child-src http://103.174.56.114:3001 http://103.174.56.114:4000;
+ child-src http://10.10.120.190:3000 http://117.250.201.43:3000;
  img-src * 'self' data: https:;`
 
-const allowedOrigins = ['http://103.174.56.114:3001'];
+const allowedOrigins = ['http://103.174.56.114:3001','http://10.10.120.190:3000' ,'http://117.250.201.43:3000'];
 
 
 app.use(cors({
