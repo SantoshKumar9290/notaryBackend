@@ -39,11 +39,16 @@ pipeline {
         }
 
         stage('Start Application') {
-            steps {
-                echo 'Starting Node.js backend...'
-                sh 'nohup npm start &'
-            }
-        }
+    steps {
+        sh '''
+          export $(cat .env | xargs)
+          pm2 delete notary-backend || true
+          pm2 start index.js --name notary-backend
+          pm2 save
+        '''
+    }
+}
+
 
     }
 
